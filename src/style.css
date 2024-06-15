@@ -1,0 +1,23 @@
+#contenedor-carro{
+    display: none;
+    overflow-y: auto;
+    
+}
+.tarjetac{
+    width: 40%;
+    height: 60vh;
+    font-size: 20px;
+    
+}
+
+.eliminarboton{
+    background-color: red;
+    border-radius: 5%;
+
+
+}
+
+
+.carrito-actualizada{
+    background-color: red;
+}
