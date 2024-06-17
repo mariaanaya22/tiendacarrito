@@ -1,115 +1,104 @@
-
-// esta funcion ayuda a que se muestre el carrito con el "block"
+// Función para mostrar el carrito
 function mostrarCarro(){
     let carrito = document.getElementById('contenedor-carro');
-    carrito.style.display="block";
+    carrito.style.display = "block";
 }
-// esta funcion ayuda a que no sea visible el carrito con el"none"
+
+// Función para ocultar el carrito
 function ocultarCarro(){
     let carrito = document.getElementById('contenedor-carro');
-    carrito.style.display="none"
+    carrito.style.display = "none";
 }
 
-// esta funcion nos ayuda a ccontar y incrementa el valor en 1 y colocamos el parseint para convertir eltexto a un numerico si no hace el proceso  se convierte en un numero 0 
-
+// Función para incrementar el contador
 function sumarcontador(){
-    let contador  = document.getElementById('contador');
-
+    let contador = document.getElementById('contador');
     let conta = parseInt(contador.textContent) || 0;
     let contar = conta + 1;
-
-    contador.textContent= contar;
+    contador.textContent = contar;
 }
-//  esta funcion coje a todos los bottones los cuales su clase sea increment y les agrega un click que va a hacer a llamar la funcion sumarcontador lo cual hace que cuando se unda ira incrementando 
+
+// Agregar evento de click a los botones de incrementar
 let buttons = document.querySelectorAll('.increment');
 buttons.forEach(button => {
     button.addEventListener('click', sumarcontador);
-})
+});
 
+let carritoitems = []; // Arreglo para los artículos del carrito
+let total = 0; // Contador para el total del precio
 
-
-
-let carritoitems = []; //arreglo a array vacio que se metaran los articulos
-let total = 0; //contador vacio
-// ayuda a agregar el articulo mediante un boton 
+// Función para agregar artículo al carrito
 function agregararticulo(event){
     let boton = event.target;
     let tarjetaid = boton.id.replace('boton', 'tarjeta');
     let tarjeta = document.getElementById(tarjetaid);
 
-    //clonar la tarjeta parrar agregar al carro 
+    // Clonar la tarjeta para agregar al carrito
     let tarjetaclonada = tarjeta.cloneNode(true);
+    tarjetaclonada.id = `carrito-${tarjetaid}`; // Asignar un id único
 
-    carritoitems.push(tarjetaid);
-
-    //AGREGAR CLASE A LA TARJETA CLONADA
-    tarjetaclonada.classList.add('tarjetac')
-
-    //crear boton para eliminar
+    // Crear botón para eliminar
     let botoneliminar = document.createElement('button');
-    botoneliminar.textContent='Eliminar Articulo';
+    botoneliminar.textContent = 'Eliminar Artículo';
     botoneliminar.classList.add('eliminarboton');
     tarjetaclonada.appendChild(botoneliminar);
 
+    // darle clase a la tarjeta clonada 
+    tarjetaclonada.classList.add('tarjetac');
 
-//obtener precio del articulo
+    // Obtener precio del artículo
     let precioelement = tarjeta.querySelector('.precio');
     let precio = parseInt(precioelement.textContent.replace('$', ''), 10);
 
+    // Sumar precio total
+    total += precio;
 
-    //sumar precio total
-
-    total+= precio;
-  
-
-    // actualizar el valor del div total 
+    // Actualizar el valor del div total
     let totalprecio = document.getElementById('total');
-    totalprecio.textContent = `total: $${total}`;
+    totalprecio.textContent = `Total: $${total}`;
 
-    //agregar tarjeta clonada al carrito
+    // Agregar tarjeta clonada al carrito
+    let carrito = document.getElementById('contenedor-carro');
+    carrito.appendChild(tarjetaclonada);
 
-    let carrito = document.getElementById('total');
-    carritoitems.push(tarjetaclonada);
-    carrito.append(tarjetaclonada);
+    // Agregar el id del artículo al arreglo carritoitems
+    carritoitems.push(tarjetaid);
 
-    //agregar una clase al carrito 
-    carrito.classList.add('carrito-actualizada');
-
-    //añadir evento de eliminacion al boton 
+    // Añadir evento de eliminación al botón
     botoneliminar.addEventListener('click', function() {
-        eliminarArticulo(tarjetaid);
+        eliminarArticulo(tarjetaclonada.id, precio);
     });
 
-  
-    function eliminarArticulo(tarjetaid) {
-        // Encontrar la tarjeta clonada en el carrito por su id y eliminarla
-        let tarjetaclonada = document.querySelector(`.tarjetac#${tarjetaid}`);
-        tarjetaclonada.parentNode.removeChild(tarjetaclonada);
-    
-        // Remover el id del artículo del carritoitems
-        carritoitems = carritoitems.filter(id => id !== tarjetaid);
-    
-        // Obtener el precio del artículo y restarlo del total
-        let tarjetaOriginal = document.getElementById(tarjetaid);
-        let precioElement = tarjetaOriginal.querySelector('.precio');
-        let precio = parseInt(precioElement.textContent.replace('$', ''), 10);
-        total -= precio;
-
-
- //actualizar el precio del div
- let totalprecio = document.getElementById('total');
- totalprecio.textContent = `total: $${total}`;
-
-    }
+    // Actualizar el contador de artículos en el carrito
+    let contadorElement = document.getElementById('contador');
+    contadorElement.textContent = carritoitems.length.toString();
 }
 
-// Función para actualizar el contador de artículos en el carrito
- let contadorElement = document.getElementById('contador');
-    contadorElement.textContent = carritoitems.length.toString();
+// Función para eliminar artículo del carrito
+function eliminarArticulo(tarjetaid, precio) {
+    let tarjetaclonada = document.getElementById(tarjetaid);
+    tarjetaclonada.parentNode.removeChild(tarjetaclonada);
 
+    // Remover el id del artículo del carritoitems
+    let originalId = tarjetaid.replace('carrito-', '');
+    carritoitems = carritoitems.filter(id => id !== originalId);
+
+    // Restar el precio del total
+    total -= precio;
+
+    // Actualizar el precio del div total
+    let totalprecio = document.getElementById('total');
+    totalprecio.textContent = `Total: $${total}`;
+
+    // Actualizar el contador de artículos en el carrito
+    let contadorElement = document.getElementById('contador');
+    contadorElement.textContent = carritoitems.length.toString();
+}
 
 // Agregar evento click a todos los botones de agregar al carrito
 document.querySelectorAll('.increment').forEach(boton => {
     boton.addEventListener('click', agregararticulo);
 });
+
+
 
